@@ -1,50 +1,41 @@
-const fastify = require("fastify");
-const { Server } = require("socket.io");
+"use strict";
 require("dotenv").config();
+const Fastify = require("fastify");
+const closeWithGrace = require("close-with-grace");
+const loggingOptions = require("./common/logging-options.js");
+const app = Fastify(loggingOptions);
+const appService = require("./app.js");
+app.register(appService);
 
-const PORT = process.env.PORT;
-
-const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
-
-fastify.register(require("fastify-cors"), {
-  origin: (origin, callback) => {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
+const closeListeners = closeWithGrace(
+  { delay: process.env.FASTIFY_CLOSE_GRACE_DELAY || 500 },
+  async function ({ signal, err, manual }) {
+    if (err) {
+      app.log.error(err);
     }
-  },
+    await app.close();
+  }
+);
+
+app.addHook("onClose", async (_, done) => {
+  closeListeners.uninstall();
+  done();
 });
 
-const server = fastify.listen(PORT, (error) => {
-  if (error) {
-    console.log(error);
+app.addHook("onRequest", (_, reply, done) => {
+  reply.startTime = process.hrtime();
+  done();
+});
+
+app.addHook("onResponse", (_, reply, done) => {
+  const hrtime = process.hrtime(reply.startTime);
+  reply.elapsedTime = hrtime[0] * 1000 + hrtime[1] / 1000000;
+  done();
+});
+
+app.listen({ port: process.env.PORT || 8080, host: "0.0.0.0" }, (err) => {
+  if (err) {
+    app.log.error(err);
     process.exit(1);
   }
-  console.log(`Server listening on port ${PORT}`);
-});
-
-const io = new Server(server, {
-  cors: {
-    origin: (origin, callback) => {
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by cors"));
-      }
-    },
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log(`New client connected: ${socket.id}`);
-
-  socket.on("message", (message) => {
-    console.log(`Message received: ${message}`);
-    socket.emit("response", "Message received");
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
 });
