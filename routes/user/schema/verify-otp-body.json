@@ -1,0 +1,17 @@
+{
+  "$id": "schema:verify-otp:body",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "phone_number": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    },
+    "otp": {
+      "type": "string"
+    }
+  },
+  "required": ["phone_number", "otp"]
+}

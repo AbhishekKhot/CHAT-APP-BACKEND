@@ -1,0 +1,14 @@
+{
+  "$id": "schema:signin:body",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "phone_number": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    }
+  },
+  "required": ["phone_number", "country_code"]
+}
