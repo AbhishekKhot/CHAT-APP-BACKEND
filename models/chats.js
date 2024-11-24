@@ -52,6 +52,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: "chats",
       timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       underscored: true,
     }
   );

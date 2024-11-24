@@ -1,14 +1,16 @@
 "use strict";
 
-const { kafka, Kafka } = require("kafkajs");
+const { Kafka, Partitioners } = require("kafkajs");
 const { name } = require("../package.json");
 
 const kafka = new Kafka({
   clientId: name,
-  brokers: process.env.KAFKA_BORKER_URL,
+  brokers: process.env.KAFKA_BROKER_URL.split(","),
 });
 
-const producer = kafka.producer();
+const producer = kafka.producer({
+  createPartitioner: Partitioners.LegacyPartitioner,
+});
 const consumer = kafka.consumer({ groupId: `${name}-consumer-group` });
 
 async function initKafka() {

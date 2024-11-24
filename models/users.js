@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      phone: {
+      phone_number: {
         type: DataTypes.STRING,
         allowNull: false,
       },
@@ -61,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      create_at: {
+      created_at: {
         type: DataTypes.DATE,
       },
       updated_at: {
@@ -72,6 +72,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: "users",
       timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       underscored: true,
     }
   );

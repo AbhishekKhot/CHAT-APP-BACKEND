@@ -54,6 +54,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: "group_chat_members",
       timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       underscored: true,
     }
   );

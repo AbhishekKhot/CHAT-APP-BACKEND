@@ -37,6 +37,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       tableName: "attachments",
       timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
       underscored: true,
     }
   );
