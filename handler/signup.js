@@ -49,4 +49,14 @@ async function verifyOtpHandler(request, reply) {
   });
 }
 
-module.exports = { singupHandler, signinHandler, verifyOtpHandler };
+async function getUsersHandler(request, reply) {
+  const users = await userService.getUsers(request.query.phone_number);
+  return reply.send(users);
+}
+
+module.exports = {
+  singupHandler,
+  signinHandler,
+  verifyOtpHandler,
+  getUsersHandler,
+};

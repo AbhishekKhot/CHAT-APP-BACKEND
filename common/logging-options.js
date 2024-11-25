@@ -55,11 +55,4 @@ module.exports = {
       return "info";
     },
   },
-  cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(",") || false,
-    methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-request-id"],
-    credentials: true,
-    maxAge: 86400, // 24 hours - how long browsers should cache CORS response
-  },
 };

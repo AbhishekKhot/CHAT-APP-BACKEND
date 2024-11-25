@@ -5,6 +5,13 @@ const closeWithGrace = require("close-with-grace");
 const loggingOptions = require("./common/logging-options.js");
 const app = Fastify(loggingOptions);
 const appService = require("./app.js");
+
+app.register(require("@fastify/cors"), {
+  origin: process.env.ALLOWED_ORIGINS?.split(","),
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
+});
+
 app.register(appService);
 
 const closeListeners = closeWithGrace(
@@ -19,17 +26,6 @@ const closeListeners = closeWithGrace(
 
 app.addHook("onClose", async (_, done) => {
   closeListeners.uninstall();
-  done();
-});
-
-app.addHook("onRequest", (_, reply, done) => {
-  reply.startTime = process.hrtime();
-  done();
-});
-
-app.addHook("onResponse", (_, reply, done) => {
-  const hrtime = process.hrtime(reply.startTime);
-  reply.elapsedTime = hrtime[0] * 1000 + hrtime[1] / 1000000;
   done();
 });
 

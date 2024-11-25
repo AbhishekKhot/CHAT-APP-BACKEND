@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "$id": "schema:users:query",
+  "additionalProperties": false,
+  "properties": {
+    "phone_number": {
+      "type": "string"
+    }
+  },
+  "required": ["phone_number"]
+}

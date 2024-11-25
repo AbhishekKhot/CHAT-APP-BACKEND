@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "$id": "schema:chats:query",
+  "additionalProperties": false,
+  "properties": {
+    "phone_number": {
+      "type": "string"
+    },
+    "country_code": {
+      "type": "string"
+    }
+  },
+  "required": ["phone_number", "country_code"]
+}
