@@ -1,5 +1,4 @@
 "use strict";
-const crypto = require("crypto");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
@@ -11,13 +10,8 @@ module.exports = {
     header: "x-request-id",
     generate: (req) => req.headers["x-request-id"] || uuidv4(),
   },
-  proxyConfig: {
-    trustProxy: true,
-    onProtoPoisoning: "remove",
-    onConstructorPoisoning: "remove",
-  },
   logger: {
-    level: process.env.LOG_LEVEL || "info",
+    level: "info",
     development: process.env.NODE_ENV !== "production",
     redact: {
       censor: "***",
@@ -47,12 +41,8 @@ module.exports = {
         message: err.message,
         stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
         statusCode: err.statusCode,
+        backtrace: err.stack,
       }),
-    },
-    customLogLevel: (res) => {
-      if (res.statusCode >= 500) return "error";
-      if (res.statusCode >= 400) return "warn";
-      return "info";
     },
   },
 };

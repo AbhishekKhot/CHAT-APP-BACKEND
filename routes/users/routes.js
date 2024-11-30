@@ -5,7 +5,7 @@ const {
   signinHandler,
   verifyOtpHandler,
   getUsersHandler,
-} = require("../../handler/signup");
+} = require("../../handler/user");
 const { addSchema } = require("../../common/helper-functions");
 
 module.exports = async function userRoutes(fastify) {

@@ -12,6 +12,22 @@ app.register(require("@fastify/cors"), {
   credentials: true,
 });
 
+// app.register(require("@fastify/cors"), (instance) => ({
+//   origin: (origin, callback) => {
+//     // Allow requests from specific origins
+//     const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+//     console.log("ALLOWED_ORIGIN: ", allowedOrigins);
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       // Null origin is for non-browser clients like curl
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+// }));
+
 app.register(appService);
 
 const closeListeners = closeWithGrace(

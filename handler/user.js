@@ -50,7 +50,11 @@ async function verifyOtpHandler(request, reply) {
 }
 
 async function getUsersHandler(request, reply) {
-  const users = await userService.getUsers(request.query.phone_number);
+  const { phone_number, current_user_phone_number } = request.query;
+  const users = await userService.getUsers(
+    phone_number,
+    current_user_phone_number
+  );
   return reply.send(users);
 }
 

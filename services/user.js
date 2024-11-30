@@ -44,10 +44,15 @@ class User {
     // return false;
   }
 
-  async getUsers(phoneNumber) {
+  async getUsers(phoneNumber, currentUserPhoneNumber) {
     const users = await db.User.findAll({
       where: {
-        phone_number: phoneNumber,
+        phone_number: {
+          [db.Op.and]: {
+            [db.Op.eq]: phoneNumber,
+            [db.Op.not]: currentUserPhoneNumber,
+          },
+        },
       },
       attributes: [
         "id",
