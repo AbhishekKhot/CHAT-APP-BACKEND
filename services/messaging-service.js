@@ -2,7 +2,7 @@
 const redis = require("../common/redis")();
 
 class MessagingService {
-  async handleOne2OneMessage(message) {
+  async handleOneOnOneMessage(message) {
     const { content, sender, receiver } = message;
     const { senderId, receiverId } = this.#getSenderAndReceiverId(
       sender.phone_number,

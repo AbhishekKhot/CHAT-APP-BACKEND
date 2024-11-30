@@ -5,22 +5,23 @@ const userService = require("../services/user");
 const CustomError = require("../utils/custom-error");
 const MessageEvent = require("../services/message-event");
 
+let IO = null;
 class SocketService {
-  constructor(fastify) {
-    return this.#init(fastify);
+  constructor(server) {
+    this.server = server;
   }
 
-  #init(fastify) {
-    const io = new Server(fastify.server, {
-      path: "chatsocket",
+  init() {
+    const io = new Server(this.server, {
+      path: "chat-sockets",
+      transports: ["websocket"],
       cors: {
-        origin: process.env.SOCKET_CLIENT_URL,
+        origin: process.env.ALLOWED_ORIGINS.split(",") || "*",
         method: ["GET"],
       },
     });
     this.#setupMiddleware(io);
-    const messageEvent = new MessageEvent(io);
-    messageEvent.setup();
+    this.#setupEventHandlers(io);
     return io;
   }
 
@@ -51,14 +52,34 @@ class SocketService {
       next();
     });
   }
+
+  #setupEventHandlers(io) {
+    console.log("CALLED");
+    io.on("connect", (socket) => {
+      console.log("CONNECTION CALLED:", socket.handshake.query);
+      MessageEvent.onConnection(socket.handshake.query);
+
+      // Handle one-on-one message event on the individual socket
+      socket.on("one_on_one_message", (message) => {
+        io.to(message.receiver.phone_number).emit("new_message", message);
+        MessageEvent.oneOnOneMessage(message);
+      });
+    });
+    io.on("disconnect", (socket) => {
+      console.log("DISCONNECT CALLED:", socket.handshake.query);
+      MessageEvent.onDisconnect(socket.handshake.query);
+    });
+  }
 }
 
-module.exports = (fastify) => {
-  let instance = null;
-  return () => {
-    if (!instance) {
-      instance = new SocketService(fastify);
-    }
-    return instance;
-  };
-};
+function getSocketIO(server) {
+  if (IO) return IO;
+  const socketService = new SocketService(server);
+  IO = socketService.init();
+  IO.on("connect", (socket) => {
+    console.log("Connected");
+  });
+  return IO;
+}
+
+module.exports = getSocketIO;

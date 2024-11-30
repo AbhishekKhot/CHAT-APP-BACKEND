@@ -1,9 +1,10 @@
 "use strict";
 
 const fp = require("fastify-plugin");
-const getSocketConnection = require("../common/socket-service");
+const getSocketIO = require("../common/socket-service");
 
 module.exports = fp(async (fastify) => {
-  const io = getSocketConnection(fastify);
+  const io = getSocketIO(fastify.server);
+
   fastify.decorate("io", io);
 });

@@ -2,20 +2,9 @@ const redis = require("../common/redis")();
 const messagingService = require("./messaging-service");
 
 class MessageEvent {
-  constructor(io) {
-    this.io = io;
-    this.redis = redis;
-  }
-  setup() {
-    this.io.on("connection", this.#handleConnection.bind(this));
-    this.io.on("disconnect", this.#handleDisconnect.bind(this));
-    this.io.on("new_message", this.#handleOneOnOneMessage.bind(this));
-    console.log("SETUP DONE");
-  }
-
-  async #handleConnection(socket) {
-    const { phoneNumber, countryCode } = socket.handshake.query;
-    await this.redis.set(
+  static async onConnection(params) {
+    const { phoneNumber, countryCode } = params;
+    await redis.set(
       `${countryCode}${phoneNumber}`,
       JSON.stringify({
         connected: true,
@@ -27,9 +16,9 @@ class MessageEvent {
     );
   }
 
-  async #handleDisconnect(socket) {
-    const { phoneNumber, countryCode } = socket.handshake.query;
-    await this.redis.set(
+  static async onDisconnect(params) {
+    const { phoneNumber, countryCode } = params;
+    await redis.set(
       `${countryCode}${phoneNumber}`,
       JSON.stringify({
         connected: false,
@@ -41,9 +30,8 @@ class MessageEvent {
     );
   }
 
-  async #handleOneOnOneMessage(message) {
-    this.io.to(receiver.phone_number).emit("NEW_MESSAGE", message);
-    await messagingService.handleOne2OneMessage(message);
+  static async oneOnOneMessage(params) {
+    await messagingService.handleOneOnOneMessage(params);
   }
 }
 
